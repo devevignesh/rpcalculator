@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import Balancer from "react-wrap-balancer";
+import Link from "next/link";
 import Header from "../components/Header";
 import Table, { AvatarCell, SelectColumnFilter, StatusPill } from "../components/Table"; // new
 
@@ -65,15 +66,25 @@ const Tracker = () => {
                     <Balancer>Track Your Rewards</Balancer>
                 </h1>
                 {rewardData?.length > 0 ? (
-                    <Table columns={columns} data={rewardData} />
+                    <>
+                        <Table columns={columns} data={rewardData} />
+                    </>
                 ) : (
-                    <Image
-                        alt="Empty rewards"
-                        src="/rewards.svg"
-                        className="mt-20 m-auto"
-                        width={400}
-                        height={400}
-                    />
+                    <div className="mt-20">
+                        <h2 className="text-xl font-semibold text-gray-700">
+                            You haven't saved any points yet.{" "}
+                            <Link href="/" className="font-medium underline underline-offset-4 transition-colors hover:text-black">
+                                Calculate points.
+                            </Link>
+                        </h2>
+                        <Image
+                            alt="Empty rewards"
+                            src="/rewards.svg"
+                            className="pointer-events-none m-auto"
+                            width={400}
+                            height={400}
+                        />
+                    </div>
                 )}
             </main>
         </div>

@@ -74,7 +74,7 @@ const Home = () => {
             <Header />
             <main className="mt-12 flex w-full flex-1 flex-col items-center px-4 text-center sm:mt-20">
                 <h1 className="font-display mx-auto max-w-4xl text-5xl font-bold tracking-normal text-slate-900 sm:text-7xl">
-                    <Balancer>Maximize Your Reward Points</Balancer>
+                    <Balancer>Calculate Your Reward Points</Balancer>
                 </h1>
                 <p className="mt-4 mb-6 text-center text-sm font-medium text-slate-500">
                     (Currently in Beta for Axis Magnus users)
@@ -134,12 +134,14 @@ const Home = () => {
                             <div className="flex flex-col items-center justify-center space-y-8">
                                 <p className="text-6xl font-bold">{generatedRewards}</p>
                             </div>
-                            <button
-                                className="mt-8 rounded-xl border bg-white px-4 py-3 font-medium text-black hover:bg-gray-100 sm:mt-10"
-                                onClick={e => recordSpend(e)}
-                            >
-                                Save Points
-                            </button>
+                            <div className="flex flex-col">
+                                <button
+                                    className="mt-6 w-1/2 m-auto rounded-xl border bg-white px-4 py-3 font-medium text-black hover:bg-gray-100 sm:mt-4"
+                                    onClick={e => recordSpend(e)}
+                                >
+                                    Save Points
+                                </button>
+                            </div>
                         </>
                     )}
                 </div>
