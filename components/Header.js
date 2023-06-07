@@ -17,7 +17,7 @@ export default function Header() {
             {pathname === "/" && (
                 <Link
                     href="/tracker"
-                    className="rounded-md text-md font-medium text-gray-500 transition-colors ease-out hover:text-black"
+                    className="rounded-md text-md font-medium text-gray-700 transition-colors ease-out hover:text-black"
                 >
                     Tracker
                 </Link>

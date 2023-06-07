@@ -73,7 +73,10 @@ const Tracker = () => {
                     <div className="mt-20">
                         <h2 className="text-xl font-semibold text-gray-700">
                             You haven't saved any points yet.{" "}
-                            <Link href="/" className="font-medium underline underline-offset-4 transition-colors hover:text-black">
+                            <Link
+                                href="/"
+                                className="font-medium underline underline-offset-4 transition-colors hover:text-black"
+                            >
                                 Calculate points.
                             </Link>
                         </h2>
