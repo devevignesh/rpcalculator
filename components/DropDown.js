@@ -2,20 +2,13 @@ import { Menu, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 import { Fragment } from "react";
 
-function classNames(...classes: string[]) {
+function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
-export type RewardType = "1X" | "3X" | "5X" | "10X";
+let rewards = ["1X", "3X", "5X", "10X"];
 
-interface DropDownProps {
-    reward: RewardType;
-    setReward: (reward: RewardType) => void;
-}
-
-let rewards: RewardType[] = ["1X", "3X", "5X", "10X"];
-
-export default function DropDown({ reward, setReward }: DropDownProps) {
+export default function DropDown({ reward, setReward }) {
     return (
         <Menu as="div" className="relative block text-left w-full">
             <div>
