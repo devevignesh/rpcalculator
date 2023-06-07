@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import Balancer from "react-wrap-balancer";
+import Image from "next/image";
 import { format } from "date-fns";
 import DropDown from "../components/DropDown";
 import Footer from "../components/Footer";
@@ -9,7 +10,7 @@ import LoadingDots from "../components/LoadingDots";
 
 const Home = () => {
     const [loading, setLoading] = useState(false);
-    const [amount, setAmount] = useState(0);
+    const [amount, setAmount] = useState();
     const [reward, setReward] = useState("1X");
     const [generatedRewards, setGeneratedRewards] = useState("");
 
@@ -17,7 +18,7 @@ const Home = () => {
         e.preventDefault();
         setLoading(true);
 
-        if (amount === 0) {
+        if (!amount) {
             setLoading(false);
             return toast.error("Please enter a valid amount");
         }
@@ -65,7 +66,7 @@ const Home = () => {
         // Store the updated data in local storage
         localStorage.setItem("rewardData", JSON.stringify(rewardData));
 
-        toast.success("Spend added to tracker");
+        toast.success("Points saved to tracker");
     };
 
     return (
@@ -81,7 +82,7 @@ const Home = () => {
                 <div className="w-full max-w-xl">
                     <div className="mt-10 flex items-center space-x-3">
                         <img src="/1-black.png" width={30} height={30} alt="1 icon" />
-                        <p className="text-left font-medium">Enter the amount.</p>
+                        <p className="text-left font-medium">Enter the amount</p>
                     </div>
                     <input
                         name="amount"
@@ -89,12 +90,11 @@ const Home = () => {
                         value={isNaN(amount) ? "" : amount.toString()} // Check if amount is NaN, set empty string as value
                         onChange={e => setAmount(parseInt(e.target.value, 10) || 0)} // Set amount to 0 if parsed value is NaN
                         className="text-md my-5 block w-full rounded-md border border-gray-300 text-gray-900 placeholder-gray-300 hover:bg-gray-50 focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
-                        placeholder="10000"
-                        required
+                        placeholder="100000"
                     />
                     <div className="mb-5 flex items-center space-x-3">
                         <img src="/2-black.png" width={30} height={30} alt="1 icon" />
-                        <p className="text-left font-medium">Rewards.</p>
+                        <p className="text-left font-medium">Rewards</p>
                     </div>
                     <div className="block">
                         <DropDown reward={reward} setReward={newReward => setReward(newReward)} />
@@ -105,7 +105,7 @@ const Home = () => {
                             className="mt-8 w-full rounded-xl bg-black px-4 py-2 font-medium text-white hover:bg-black/80 sm:mt-10"
                             onClick={e => checkRewards(e)}
                         >
-                            Check your reward &rarr;
+                            Check your reward
                         </button>
                     )}
                     {loading && (
@@ -138,7 +138,7 @@ const Home = () => {
                                 className="mt-8 rounded-xl border bg-white px-4 py-3 font-medium text-black hover:bg-gray-100 sm:mt-10"
                                 onClick={e => recordSpend(e)}
                             >
-                                Record this spend
+                                Save Points
                             </button>
                         </>
                     )}

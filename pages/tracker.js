@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import Head from "next/head";
+import Image from "next/image";
 import Balancer from "react-wrap-balancer";
 import Header from "../components/Header";
 import Table, { AvatarCell, SelectColumnFilter, StatusPill } from "../components/Table"; // new
@@ -21,8 +22,8 @@ const Tracker = () => {
                         [spendAmount.rows]
                     );
 
-                    return <span className="text-left font-bold text-lg text-black">{total}</span>;
-                },
+                    return <span className="text-left text-lg font-bold text-black">{total}</span>;
+                }
             },
             {
                 Header: "Reward Rate",
@@ -33,12 +34,13 @@ const Tracker = () => {
                 accessor: "rewardPoints",
                 Footer: spendAmount => {
                     const total = useMemo(
-                        () => spendAmount.rows.reduce((sum, row) => row.values.rewardPoints + sum, 0),
+                        () =>
+                            spendAmount.rows.reduce((sum, row) => row.values.rewardPoints + sum, 0),
                         [spendAmount.rows]
                     );
 
-                    return <span className="text-left font-bold text-lg text-black">{total}</span>;
-                },
+                    return <span className="text-left text-lg font-bold text-black">{total}</span>;
+                }
             }
         ],
         []
@@ -54,7 +56,7 @@ const Tracker = () => {
     return (
         <div className="mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center py-2">
             <Head>
-                <title></title>
+                <title>Tracker | RP Calculator</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <Header />
@@ -65,7 +67,13 @@ const Tracker = () => {
                 {rewardData?.length > 0 ? (
                     <Table columns={columns} data={rewardData} />
                 ) : (
-                    <p>No data</p>
+                    <Image
+                        alt="Empty rewards"
+                        src="/rewards.svg"
+                        className="mt-20 m-auto"
+                        width={400}
+                        height={400}
+                    />
                 )}
             </main>
         </div>
