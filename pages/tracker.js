@@ -1,8 +1,11 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import Balancer from "react-wrap-balancer";
 import Link from "next/link";
+import { ArrowUpTrayIcon } from "@heroicons/react/20/solid";
+import { toast } from "react-hot-toast";
+import Papa from "papaparse";
 import Header from "../components/Header";
 import Table, { AvatarCell, SelectColumnFilter, StatusPill } from "../components/Table"; // new
 
@@ -19,7 +22,11 @@ const Tracker = () => {
                 accessor: "amount",
                 Footer: spendAmount => {
                     const total = useMemo(
-                        () => spendAmount.rows.reduce((sum, row) => row.values.amount + sum, 0),
+                        () =>
+                            spendAmount.rows.reduce(
+                                (sum, row) => parseInt(row.values.amount, 10) + sum,
+                                0
+                            ),
                         [spendAmount.rows]
                     );
 
@@ -36,7 +43,10 @@ const Tracker = () => {
                 Footer: spendAmount => {
                     const total = useMemo(
                         () =>
-                            spendAmount.rows.reduce((sum, row) => row.values.rewardPoints + sum, 0),
+                            spendAmount.rows.reduce(
+                                (sum, row) => parseInt(row.values.rewardPoints, 10) + sum,
+                                0
+                            ),
                         [spendAmount.rows]
                     );
 
@@ -46,6 +56,44 @@ const Tracker = () => {
         ],
         []
     );
+    const fileInputRef = useRef();
+
+    const triggerFileInput = () => {
+        fileInputRef.current.click();
+    };
+
+    const handleUploadTransaction = async event => {
+        const { files } = event.target;
+        if (files?.length > 0) {
+            const reader = new FileReader();
+            reader.readAsText(files[0]);
+            reader.onload = () => {
+                Papa.parse(reader.result, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: results => {
+                        const parsedData = results.data;
+                        // Store the updated data in local storage
+                        const existingData = localStorage.getItem("rewardData");
+                        let rewardData = [];
+                        if (existingData) {
+                            // If data exists, parse it from JSON to an array
+                            rewardData = JSON.parse(existingData);
+                        }
+                        rewardData.push(...parsedData);
+                        // Store the updated data in local storage
+                        localStorage.setItem("rewardData", JSON.stringify(rewardData));
+
+                        setRewardData(prevData => [...prevData, ...parsedData]);
+                        toast.success("File uploaded");
+                    },
+                    error: error => {
+                        toast.error("Please try again!");
+                    }
+                });
+            };
+        }
+    };
 
     useEffect(() => {
         const storedData = localStorage.getItem("rewardData");
@@ -67,6 +115,33 @@ const Tracker = () => {
                 </h1>
                 {rewardData?.length > 0 ? (
                     <>
+                        <div className="mt-10 flex justify-center">
+                            <div>
+                                <input
+                                    className="hidden"
+                                    type="file"
+                                    accept=".csv"
+                                    onChange={handleUploadTransaction}
+                                    ref={fileInputRef}
+                                />
+                                <button
+                                    onClick={triggerFileInput}
+                                    className="font-xs inline-flex items-center border border-gray-300 bg-white px-[8px] py-[6px] text-sm font-medium text-black hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 rounded-md"
+                                >
+                                    {" "}
+                                    <ArrowUpTrayIcon
+                                        width={20}
+                                        height={20}
+                                        title="Upload"
+                                        className="max-xs:mr-0 mr-[1px] mt-[0px] h-4 w-4 text-black"
+                                    />
+                                    <span className="sr-only">Upload transitions</span>
+                                    <span className="hidden sm:ml-1 sm:inline-block">
+                                        Import as CSV
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
                         <Table columns={columns} data={rewardData} />
                     </>
                 ) : (
@@ -82,8 +157,8 @@ const Tracker = () => {
                         </h2>
                         <Image
                             alt="Empty rewards"
-                            src="/rewards.svg"
-                            className="pointer-events-none m-auto"
+                            src="/no-rewards.svg"
+                            className="pointer-events-none m-auto mt-4"
                             width={400}
                             height={400}
                         />

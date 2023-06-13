@@ -30,7 +30,7 @@ export function SelectColumnFilter({
         <label className="flex items-baseline gap-x-2">
             <span className="text-gray-700">{render("Header")}: </span>
             <select
-                className="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                className="rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2"
                 name={id}
                 id={id}
                 value={filterValue}
@@ -130,7 +130,7 @@ function Table({ columns, data }) {
                 )}
             </div>
             {/* table */}
-            <div className="mt-10 flex flex-col">
+            <div className="mt-6 flex flex-col">
                 <div className="overflow-x-auto lg:-mx-8">
                     <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                         <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
@@ -241,7 +241,7 @@ function Table({ columns, data }) {
                         <label>
                             <span className="sr-only">Items Per Page</span>
                             <select
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2"
                                 value={state.pageSize}
                                 onChange={e => {
                                     setPageSize(Number(e.target.value));

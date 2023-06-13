@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Toaster, toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import Balancer from "react-wrap-balancer";
 import Image from "next/image";
 import { format } from "date-fns";
@@ -102,7 +102,7 @@ const Home = () => {
 
                     {!loading && (
                         <button
-                            className="mt-8 w-full rounded-xl bg-black px-4 py-2 font-medium text-white hover:bg-black/80 sm:mt-10"
+                            className="mt-8 w-full rounded-md bg-black px-4 py-2 font-medium text-white hover:bg-black/80 sm:mt-10"
                             onClick={e => checkRewards(e)}
                         >
                             Check your reward
@@ -110,18 +110,13 @@ const Home = () => {
                     )}
                     {loading && (
                         <button
-                            className="mt-8 w-full rounded-xl bg-black px-4 py-2 font-medium text-white hover:bg-black/80 sm:mt-10"
+                            className="mt-8 w-full rounded-md bg-black px-4 py-2 font-medium text-white hover:bg-black/80 sm:mt-10"
                             disabled
                         >
                             <LoadingDots color="white" style="large" />
                         </button>
                     )}
                 </div>
-                <Toaster
-                    position="top-center"
-                    reverseOrder={false}
-                    toastOptions={{ duration: 2000 }}
-                />
                 <hr className="border-1 h-px bg-gray-700 dark:bg-gray-700" />
                 <div className="my-10 space-y-10">
                     {generatedRewards && (
@@ -136,7 +131,7 @@ const Home = () => {
                             </div>
                             <div className="flex flex-col">
                                 <button
-                                    className="mt-6 w-1/2 m-auto rounded-xl border bg-white px-4 py-3 font-medium text-black hover:bg-gray-100 sm:mt-4"
+                                    className="mt-6 w-1/2 m-auto sm:mt-4 font-xs border border-gray-300 bg-white px-[8px] py-[6px] text-sm font-medium text-black hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 rounded-md"
                                     onClick={e => recordSpend(e)}
                                 >
                                     Save Points
