@@ -3,7 +3,7 @@ import Head from "next/head";
 import Image from "next/image";
 import Balancer from "react-wrap-balancer";
 import Link from "next/link";
-import { ArrowUpTrayIcon } from "@heroicons/react/20/solid";
+import { ArrowUpTrayIcon, ArrowDownTrayIcon } from "@heroicons/react/20/solid";
 import { toast } from "react-hot-toast";
 import Papa from "papaparse";
 import Header from "../components/Header";
@@ -56,13 +56,14 @@ const Tracker = () => {
         ],
         []
     );
-    const fileInputRef = useRef();
+    const importFileInputRef = useRef();
 
-    const triggerFileInput = () => {
-        fileInputRef.current.click();
+    const triggerImportFileInput = () => {
+        importFileInputRef.current.click();
     };
 
     const handleUploadTransaction = async event => {
+        event.preventDefault();
         const { files } = event.target;
         if (files?.length > 0) {
             const reader = new FileReader();
@@ -95,6 +96,20 @@ const Tracker = () => {
         }
     };
 
+    const handleDownloadTransaction = event => {
+        event.preventDefault();
+
+        const csv = Papa.unparse(rewardData);
+        const csvData = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(csvData);
+        link.download = "transactions.csv";
+        link.click();
+
+        toast.success("Your file is ready to download");
+    };
+
     useEffect(() => {
         const storedData = localStorage.getItem("rewardData");
         if (storedData) {
@@ -115,18 +130,18 @@ const Tracker = () => {
                 </h1>
                 {rewardData?.length > 0 ? (
                     <>
-                        <div className="mt-10 flex justify-center">
-                            <div>
+                        <div className="mt-16 flex justify-center">
+                            <div className="mr-2">
                                 <input
                                     className="hidden"
                                     type="file"
                                     accept=".csv"
                                     onChange={handleUploadTransaction}
-                                    ref={fileInputRef}
+                                    ref={importFileInputRef}
                                 />
                                 <button
-                                    onClick={triggerFileInput}
-                                    className="font-xs inline-flex items-center border border-gray-300 bg-white px-[8px] py-[6px] text-sm font-medium text-black hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 rounded-md"
+                                    onClick={triggerImportFileInput}
+                                    className="font-xs inline-flex items-center rounded-md border border-gray-300 bg-white px-[8px] py-[6px] text-sm font-medium text-black hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2"
                                 >
                                     {" "}
                                     <ArrowUpTrayIcon
@@ -138,6 +153,24 @@ const Tracker = () => {
                                     <span className="sr-only">Upload transitions</span>
                                     <span className="hidden sm:ml-1 sm:inline-block">
                                         Import as CSV
+                                    </span>
+                                </button>
+                            </div>
+                            <div>
+                                <button
+                                    onClick={handleDownloadTransaction}
+                                    className="font-xs inline-flex items-center rounded-md border border-gray-300 bg-white px-[8px] py-[6px] text-sm font-medium text-black hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2"
+                                >
+                                    {" "}
+                                    <ArrowDownTrayIcon
+                                        width={20}
+                                        height={20}
+                                        title="Upload"
+                                        className="max-xs:mr-0 mr-[1px] mt-[0px] h-4 w-4 text-black"
+                                    />
+                                    <span className="sr-only">Download transitions</span>
+                                    <span className="hidden sm:ml-1 sm:inline-block">
+                                        Export as CSV
                                     </span>
                                 </button>
                             </div>
