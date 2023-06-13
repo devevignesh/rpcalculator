@@ -56,13 +56,13 @@ const Tracker = () => {
         ],
         []
     );
-    const importFileInputRef = useRef();
+    const importFileInputRef = useRef(null);
 
     const triggerImportFileInput = () => {
         importFileInputRef.current.click();
     };
 
-    const handleUploadTransaction = async event => {
+    const handleUploadTransaction = event => {
         event.preventDefault();
         const { files } = event.target;
         if (files?.length > 0) {
@@ -72,21 +72,65 @@ const Tracker = () => {
                 Papa.parse(reader.result, {
                     header: true,
                     skipEmptyLines: true,
-                    complete: results => {
-                        const parsedData = results.data;
-                        // Store the updated data in local storage
-                        const existingData = localStorage.getItem("rewardData");
-                        let rewardData = [];
-                        if (existingData) {
-                            // If data exists, parse it from JSON to an array
-                            rewardData = JSON.parse(existingData);
-                        }
-                        rewardData.push(...parsedData);
-                        // Store the updated data in local storage
-                        localStorage.setItem("rewardData", JSON.stringify(rewardData));
+                    beforeFirstChunk: chunk => {
+                        const lines = chunk.split("\n");
 
-                        setRewardData(prevData => [...prevData, ...parsedData]);
-                        toast.success("File uploaded");
+                        // Check if the header row is valid
+                        const header = lines[0].split(",").map(item => item.trim()); // Trim whitespace from each item
+                        const expectedHeaders = ["Reward Points", "Amount", "Date", "Reward Rate"];
+
+                        const isValidHeader = expectedHeaders.every(expectedHeader =>
+                            header.includes(expectedHeader)
+                        );
+                        if (!isValidHeader) {
+                            return toast.error("Invalid CSV header");
+                        }
+
+                        // Clean up any extra characters in each header
+                        const cleanedHeader = header.map(item => item.replace(/\r$/, ""));
+
+                        // Replace the header row with the cleaned header
+                        lines[0] = cleanedHeader.join(",");
+
+                        // Return the modified chunk
+                        return lines.join("\n");
+                    },
+                    transformHeader: header => {
+                        // Perform the header transformation as needed
+                        if (header === "Reward Points" || header === "RP") {
+                            return "rewardPoints";
+                        }
+                        if (header === "Amount") {
+                            return "amount";
+                        }
+                        if (header === "Date") {
+                            return "date";
+                        }
+                        if (header === "Reward Rate") {
+                            return "rewardRate";
+                        }
+                        // Return the original header if no transformation is needed
+                        return header;
+                    },
+                    complete: results => {
+                        if (results.data?.length > 0) {
+                            const parsedData = results.data;
+                            // Store the updated data in local storage
+                            const existingData = localStorage.getItem("rewardData");
+                            let rewardData = [];
+                            if (existingData) {
+                                // If data exists, parse it from JSON to an array
+                                rewardData = JSON.parse(existingData);
+                            }
+                            rewardData.push(...parsedData);
+                            // Store the updated data in local storage
+                            localStorage.setItem("rewardData", JSON.stringify(rewardData));
+
+                            setRewardData(prevData => [...prevData, ...parsedData]);
+
+                            importFileInputRef.current.value = "";
+                            return toast.success("File uploaded");
+                        }
                     },
                     error: error => {
                         toast.error("Please try again!");
@@ -99,7 +143,18 @@ const Tracker = () => {
     const handleDownloadTransaction = event => {
         event.preventDefault();
 
-        const csv = Papa.unparse(rewardData);
+        // Define the custom column names
+        const columnNames = ["Amount", "Reward Points", "Date", "Reward Rate"];
+
+        const modifiedData = rewardData.map(row => {
+            const modifiedRow = {};
+            Object.keys(row).forEach((key, index) => {
+                modifiedRow[columnNames[index]] = row[key];
+            });
+            return modifiedRow;
+        });
+
+        const csv = Papa.unparse(modifiedData);
         const csvData = new Blob([csv], { type: "text/csv;charset=utf-8;" });
 
         const link = document.createElement("a");
@@ -107,7 +162,7 @@ const Tracker = () => {
         link.download = "transactions.csv";
         link.click();
 
-        toast.success("Your file is ready to download");
+        return toast.success("Your file is ready to download");
     };
 
     useEffect(() => {
