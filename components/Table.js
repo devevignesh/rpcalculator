@@ -185,14 +185,9 @@ function Table({ columns, data }) {
                                                             className="whitespace-nowrap px-6 py-4"
                                                             role="cell"
                                                         >
-                                                            {cell.column.Cell.name ===
-                                                            "defaultRenderer" ? (
-                                                                <div className="text-left text-sm text-gray-500">
-                                                                    {cell.render("Cell")}
-                                                                </div>
-                                                            ) : (
-                                                                cell.render("Cell")
-                                                            )}
+                                                            <div className="text-left text-sm text-gray-500">
+                                                                {cell.render("Cell")}
+                                                            </div>
                                                         </td>
                                                     );
                                                 })}
@@ -239,7 +234,7 @@ function Table({ columns, data }) {
                         <label>
                             <span className="sr-only">Items Per Page</span>
                             <select
-                                className="rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-gray-800 focus:border-gray-300 focus:ring-offset-2 mt-1 block w-full"
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-300 focus:ring-2 focus:ring-gray-800 focus:ring-offset-2"
                                 value={state.pageSize}
                                 onChange={e => {
                                     setPageSize(Number(e.target.value));
