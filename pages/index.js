@@ -57,7 +57,8 @@ const Home = () => {
             amount: amount,
             rewardPoints: generatedRewards,
             date: formattedDate,
-            rewardRate: reward
+            rewardRate: reward,
+            verified: false
         };
 
         // Append the new object to the existing data or create a new array with it

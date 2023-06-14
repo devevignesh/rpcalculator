@@ -6,56 +6,104 @@ import Link from "next/link";
 import { ArrowUpTrayIcon, ArrowDownTrayIcon } from "@heroicons/react/20/solid";
 import { toast } from "react-hot-toast";
 import Papa from "papaparse";
+import { format, parse } from "date-fns";
 import Header from "../components/Header";
 import Table, { AvatarCell, SelectColumnFilter, StatusPill } from "../components/Table"; // new
 
 const Tracker = () => {
     const [rewardData, setRewardData] = useState([]);
-    const columns = useMemo(
-        () => [
-            {
-                Header: "Date",
-                accessor: "date"
-            },
-            {
-                Header: "Amount",
-                accessor: "amount",
-                Footer: spendAmount => {
-                    const total = useMemo(
-                        () =>
-                            spendAmount.rows.reduce(
-                                (sum, row) => parseInt(row.values.amount, 10) + sum,
-                                0
-                            ),
-                        [spendAmount.rows]
-                    );
 
-                    return <span className="text-left text-lg font-bold text-black">{total}</span>;
-                }
-            },
-            {
-                Header: "Reward Rate",
-                accessor: "rewardRate"
-            },
-            {
-                Header: "Reward Points",
-                accessor: "rewardPoints",
-                Footer: spendAmount => {
-                    const total = useMemo(
-                        () =>
-                            spendAmount.rows.reduce(
-                                (sum, row) => parseInt(row.values.rewardPoints, 10) + sum,
-                                0
-                            ),
-                        [spendAmount.rows]
-                    );
+    const handleVerified = (value, row) => {
+        const updatedData = [...rewardData]; // Copy the original array
+        const rowIndex = row.id; // Get the index of the current row
+        updatedData[rowIndex].verified = !value; // Update the 'verified' property of the specific object
 
-                    return <span className="text-left text-lg font-bold text-black">{total}</span>;
+        // Update the data in local storage
+        localStorage.setItem("rewardData", JSON.stringify(updatedData));
+
+        setRewardData(updatedData);
+    };
+
+    const columns = [
+        {
+            Header: "Date",
+            accessor: "date"
+        },
+        {
+            Header: "Amount",
+            accessor: "amount",
+            Footer: spendAmount => {
+                const total = useMemo(
+                    () =>
+                        spendAmount.rows.reduce(
+                            (sum, row) => parseInt(row.values.amount, 10) + sum,
+                            0
+                        ),
+                    [spendAmount.rows]
+                );
+
+                return <span className="text-left text-lg font-bold text-black">{total}</span>;
+            }
+        },
+        {
+            Header: "Reward Rate",
+            accessor: "rewardRate"
+        },
+        {
+            Header: "Reward Points",
+            accessor: "rewardPoints",
+            Footer: spendAmount => {
+                const total = useMemo(
+                    () =>
+                        spendAmount.rows.reduce(
+                            (sum, row) => parseInt(row.values.rewardPoints, 10) + sum,
+                            0
+                        ),
+                    [spendAmount.rows]
+                );
+
+                return <span className="text-left text-lg font-bold text-black">{total}</span>;
+            }
+        },
+        {
+            Header: "Verified",
+            accessor: "verified",
+            Cell: ({ value, row }) => {
+                return (
+                    <div className="text-left">
+                        <input
+                            type="checkbox"
+                            className="rounded-sm border border-gray-300 text-black focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2"
+                            checked={value}
+                            onChange={() => handleVerified(value, row)}
+                        />
+                    </div>
+                );
+            },
+            Footer: ({ rows }) => {
+                const total = useMemo(() => {
+                    return rows.reduce((sum, row) => {
+                        const { rewardPoints, verified } = row.values;
+                        return verified ? sum + parseInt(rewardPoints, 10) : sum;
+                    }, 0);
+                }, [rows]);
+
+                return <span className="text-left text-lg font-bold text-black">{total || 0}</span>;
+            },
+            sortType: (a, b, id) => {
+                const valueA = a.original[id];
+                const valueB = b.original[id];
+
+                if (valueA === valueB) {
+                    return 0;
+                } else if (valueA) {
+                    return -1;
+                } else {
+                    return 1;
                 }
             }
-        ],
-        []
-    );
+        }
+    ];
     const importFileInputRef = useRef(null);
 
     const triggerImportFileInput = () => {
@@ -114,7 +162,11 @@ const Tracker = () => {
                     },
                     complete: results => {
                         if (results.data?.length > 0) {
-                            const parsedData = results.data;
+                            // const parsedData = results.data;
+                            const parsedData = results.data.map(row => ({
+                                ...row,
+                                verified: false // Add the new column with the initial value
+                            }));
                             // Store the updated data in local storage
                             const existingData = localStorage.getItem("rewardData");
                             let rewardData = [];

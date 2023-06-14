@@ -136,14 +136,12 @@ function Table({ columns, data }) {
                         <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
                             <table
                                 {...getTableProps()}
-                                className="min-w-full divide-y divide-gray-200"
+                                className="relative w-full table-auto border-collapse overflow-hidden rounded-lg bg-slate-50 shadow-md shadow-gray-200"
                             >
                                 <thead className="bg-gray-50">
                                     {headerGroups.map(headerGroup => (
                                         <tr {...headerGroup.getHeaderGroupProps()}>
                                             {headerGroup.headers.map(column => (
-                                                // Add the sorting props to control sorting. For this example
-                                                // we can add them into the header props
                                                 <th
                                                     scope="col"
                                                     className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
@@ -241,7 +239,7 @@ function Table({ columns, data }) {
                         <label>
                             <span className="sr-only">Items Per Page</span>
                             <select
-                                className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2"
+                                className="rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-gray-800 focus:border-gray-300 focus:ring-offset-2 mt-1 block w-full"
                                 value={state.pageSize}
                                 onChange={e => {
                                     setPageSize(Number(e.target.value));
